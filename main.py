@@ -2,6 +2,13 @@
 from time import sleep 
 
 def main():
+    print("Velkommen til alderstjekket!")
+    alder()
+    
+    print("\nNu skal vi registrere oplysninger for 3 personer.")
+    register_personer()
+
+def alder():
     forsoeg = 3
     alder = None
 
@@ -29,6 +36,31 @@ def main():
         print(f"Tæller ned: {3 - i}...")
         # Her laver jeg en pause på 1 sekund mellem hver udskrift
         sleep(1)  
+
+def register_personer():
+    personer = []  # Vores liste til at gemme data
+    
+    print("Indtast oplysninger for 3 personer:")
+    
+    for i in range(3):
+        navn = input(f"\nNavn på person {i+1}: ")
+        
+        # Her genbruger vi din smarte fejlhåndtering til alderen
+        while True:
+            try:
+                alder = int(input(f"Hvor gammel er {navn}? "))
+                break
+            except ValueError:
+                print("Indtast venligst et tal.")
+        
+        # Vi tilføjer en 'dictionary' til vores liste
+        personer.append({"navn": navn, "alder": alder})
+
+    # Nu finder vi den ældste (Python magi!)
+    aeldste_person = max(personer, key=lambda x: x["alder"])
+    
+    print(f"\nDen ældste person er {aeldste_person['navn']} på {aeldste_person['alder']} år.")
+
 
 if __name__ == "__main__":
     main()
