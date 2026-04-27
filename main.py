@@ -1,6 +1,5 @@
 import json  # For at kunne gemme og indlæse data i JSON-format, hvis det skulle blive nødvendigt senere
 import os # For at kunne starte med en tom skærm hver gang programmet køres, så det ser pænere ud i terminalen. Det er ikke nødvendigt
-os.system('cls' if os.name == 'nt' else 'clear') # Dette er den magiske kommando, der rydder skærmen på både Windows og Unix-baserede systemer  
 
 from time import sleep # Dette har jeg gjort for at kunne få en realistisk nedtælling
 
@@ -26,9 +25,11 @@ def hent_fra_json():
         return [] # Hvis der opstår en anden fejl, returnerer vi også en tom liste for at sikre, at programmet kan fortsætte
     
 def main():
-    personer = hent_fra_json() # Start med at hente data
+    personer = hent_fra_json() 
     
     while True:
+        # os.system('clear') flyttet herind for at holde terminalen ren
+        os.system('cls' if os.name == 'nt' else 'clear') # Dette er den magiske kommando, der rydder skærmen på både Windows og Unix-baserede systemer  
         print("\n--- HOVEDMENU ---")
         print("1. Se alle personer")
         print("2. Registrer nye personer")
@@ -36,22 +37,35 @@ def main():
         print("4. Slet en person")
         print("5. Afslut")
         
-        valg = input("\nVælg (1-5): ")
+        valg = input("\nVælg (1-5): ").strip() # .strip() fjerner unødigt mellemrum
         
+        if not valg: # Tjekker om inputtet er tomt
+            print("⚠️ Du skal indtaste et valg.")
+            continue
+
         if valg == "1":
-            for p in personer: print(f"- {p['navn']}: {p['alder']} år")
+            if not personer:
+                print("📭 Listen er tom.")
+            else:
+                for p in personer: print(f"- {p['navn']}: {p['alder']} år")
         elif valg == "2":
-            register_personer() # Din eksisterende funktion
-            personer = hent_fra_json() # Opdater listen efter registrering
+            register_personer()
+            personer = hent_fra_json()
         elif valg == "3":
-            soeg_person(personer)
+            if not personer:
+                print("📭 Ingen data at søge i.")
+            else:
+                soeg_person(personer)
         elif valg == "4":
-            slet_person(personer)
+            if not personer:
+                print("📭 Ingen data at slette.")
+            else:
+                slet_person(personer)
         elif valg == "5":
-            print("Tak for i dag!")
+            print("🚀 Tak for i dag! Programmet lukker...")
             break
         else:
-            print("Ugyldigt valg, prøv igen.")
+            print(f"❌ '{valg}' er ikke en mulighed. Vælg venligst et tal mellem 1 og 5.")
 
     #print("Velkommen til alderstjekket!")
     #alder()
@@ -131,7 +145,7 @@ def alder():
 def register_personer():
     # personer = []  # Vores liste til at gemme data
     personer = hent_fra_json() # Vi starter med at hente eksisterende data, hvis der er nogen
-    
+
     if personer:
         print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
     tryings = 3

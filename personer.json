@@ -20,11 +20,15 @@
         "alder": 46
     },
     {
-        "navn": "Bart",
-        "alder": 65
-    },
-    {
         "navn": "Ronni",
         "alder": 44
+    },
+    {
+        "navn": "Isabella",
+        "alder": 42
+    },
+    {
+        "navn": "Bart",
+        "alder": 65
     }
 ]
