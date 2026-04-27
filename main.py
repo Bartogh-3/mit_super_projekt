@@ -56,10 +56,10 @@ def register_personer():
     tryings = 3
 
     # print("Indtast oplysninger for 3 personer:")
-    antal_personer = int(input("Hvor mange personer vil du registrere? "))
     while tryings > 0:
+    
         try:
-            antal_personer = int(antal_personer)
+            antal_personer = int(input("Hvor mange personer vil du registrere? "))
             break
         except ValueError:
             tryings -= 1
