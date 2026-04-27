@@ -61,6 +61,10 @@ def register_personer():
     
     print(f"\nDen ældste person er {aeldste_person['navn']} på {aeldste_person['alder']} år.")
 
+    # Vi kan også udskrive alle personerne for at se, at det virker
+    print("\nAlle registrerede personer:")
+    for p in personer:
+        print(f"- {p['navn']}: {p['alder']} år")
 
 if __name__ == "__main__":
     main()
