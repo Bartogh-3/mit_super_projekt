@@ -1,4 +1,6 @@
 import json  # For at kunne gemme og indlæse data i JSON-format, hvis det skulle blive nødvendigt senere
+import os # For at kunne starte med en tom skærm hver gang programmet køres, så det ser pænere ud i terminalen. Det er ikke nødvendigt
+os.system('cls' if os.name == 'nt' else 'clear') # Dette er den magiske kommando, der rydder skærmen på både Windows og Unix-baserede systemer  
 
 from time import sleep # Dette har jeg gjort for at kunne få en realistisk nedtælling
 

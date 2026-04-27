@@ -18,5 +18,13 @@
     {
         "navn": "Daniel",
         "alder": 46
+    },
+    {
+        "navn": "Bart",
+        "alder": 65
+    },
+    {
+        "navn": "Ronni",
+        "alder": 44
     }
 ]
