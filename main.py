@@ -116,7 +116,7 @@ def register_personer():
     for p in personer:
         print(f"- {p['navn']}: {p['alder']} år")
 
-gem_til_jason(personer)  # Gemmer data i JSON-format
+    gem_til_jason(personer) # Gemmer data i JSON-format
 
 if __name__ == "__main__":
     main()

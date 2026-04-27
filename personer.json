@@ -1,0 +1,22 @@
+[
+    {
+        "navn": "Kim",
+        "alder": 65
+    },
+    {
+        "navn": "Kirsten",
+        "alder": 77
+    },
+    {
+        "navn": "John",
+        "alder": 50
+    },
+    {
+        "navn": "Silke",
+        "alder": 25
+    },
+    {
+        "navn": "Daniel",
+        "alder": 46
+    }
+]
