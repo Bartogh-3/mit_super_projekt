@@ -23,7 +23,15 @@ def hent_fra_json():
     except Exception as e:
         print(f"❌ Kunne ikke hente data: {e}")
         return [] # Hvis der opstår en anden fejl, returnerer vi også en tom liste for at sikre, at programmet kan fortsætte
-    
+
+def vis_alle_personer(personer):
+    if not personer:
+        print("\n📭 Ingen personer registreret endnu.")
+    else:
+        print("\n--- 👥 ALLE REGISTREREDE PERSONER ---")
+        for p in personer:
+            print(f"- {p['navn']}: {p['alder']} år")
+
 def main():
     personer = hent_fra_json() 
     
@@ -44,10 +52,8 @@ def main():
             continue
 
         if valg == "1":
-            if not personer:
-                print("📭 Listen er tom.")
-            else:
-                for p in personer: print(f"- {p['navn']}: {p['alder']} år")
+            vis_alle_personer(personer)
+        
         elif valg == "2":
             register_personer()
             personer = hent_fra_json()
