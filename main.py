@@ -2,7 +2,7 @@ import json  # For at kunne gemme og indlæse data i JSON-format, hvis det skull
 
 from time import sleep # Dette har jeg gjort for at kunne få en realistisk nedtælling
 
-def gem_til_jason(personer):
+def gem_til_json(personer):
     try:
         with open("personer.json", "w", encoding="utf-8") as f:
             json.dump(personer, f, ensure_ascii=False, indent=4)
@@ -10,7 +10,7 @@ def gem_til_jason(personer):
     except Exception as e:
         print(f"❌ Kunne ikke gemme data: {e}")
 
-def hent_fra_jason():
+def hent_fra_json():
     try:
         with open("personer.json", "r", encoding="utf-8") as f:
             personer = json.load(f)
@@ -76,7 +76,7 @@ def alder():
 def register_personer():
     # personer = []  # Vores liste til at gemme data
     # Vi prøver at hente data fra JSON-filen først, så vi kan fortsætte med eksisterende data, hvis filen findes
-    personer = hent_fra_jason()
+    personer = hent_fra_json()
 
     if personer:
         print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
@@ -121,7 +121,7 @@ def register_personer():
     for p in personer:
         print(f"- {p['navn']}: {p['alder']} år")
 
-    gem_til_jason(personer) # Gemmer data i JSON-format
+    gem_til_json(personer) # Gemmer data i JSON-format
 
 if __name__ == "__main__":
     main()
