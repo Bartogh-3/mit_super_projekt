@@ -1,6 +1,28 @@
-# Dette har jeg gjort for at kunne få en realistisk nedtælling
-from time import sleep 
+import json  # For at kunne gemme og indlæse data i JSON-format, hvis det skulle blive nødvendigt senere
 
+from time import sleep # Dette har jeg gjort for at kunne få en realistisk nedtælling
+
+def gem_til_jason(personer):
+    try:
+        with open("personer.json", "w", encoding="utf-8") as f:
+            json.dump(personer, f, ensure_ascii=False, indent=4)
+        print("\n ✅ Data er gemt i 'personer.json'")
+    except Exception as e:
+        print(f"❌ Kunne ikke gemme data: {e}")
+
+def hent_fra_jason():
+    try:
+        with open("personer.json", "r", encoding="utf-8") as f:
+            personer = json.load(f)
+        print("\n ✅ Data er hentet fra 'personer.json'")
+        return personer
+    except FileNotFoundError:
+        print("❌ Filen 'personer.json' blev ikke fundet.")
+        return [] # Hvis filen ikke findes, returnerer vi en tom liste, så programmet kan fortsætte uden at crashe
+    except Exception as e:
+        print(f"❌ Kunne ikke hente data: {e}")
+        return [] # Hvis der opstår en anden fejl, returnerer vi også en tom liste for at sikre, at programmet kan fortsætte
+    
 def main():
     print("Velkommen til alderstjekket!")
     alder()
@@ -93,6 +115,8 @@ def register_personer():
     print("\nAlle registrerede personer:")
     for p in personer:
         print(f"- {p['navn']}: {p['alder']} år")
+
+gem_til_jason(personer)  # Gemmer data i JSON-format
 
 if __name__ == "__main__":
     main()
