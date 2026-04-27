@@ -1,30 +1,68 @@
-import json  # For at kunne gemme og indlæse data i JSON-format, hvis det skulle blive nødvendigt senere
-import os # For at kunne starte med en tom skærm hver gang programmet køres, så det ser pænere ud i terminalen. Det er ikke nødvendigt
+"""
+Person Registration System
+A simple application for registering and managing person data with persistent storage.
+"""
 
-from time import sleep # Dette har jeg gjort for at kunne få en realistisk nedtælling
+import json  # For saving and loading data in JSON format
+import os    # For cross-platform terminal clearing
+from time import sleep  # For realistic countdown functionality
+from pathlib import Path  # For better file path handling
+
+# Constants
+MAX_ATTEMPTS = 3
+DATA_FILE = "personer.json"
+
 
 def gem_til_json(personer):
+    """
+    Save person data to a JSON file.
+    
+    Args:
+        personer (list): List of person dictionaries to save
+    """
     try:
-        with open("personer.json", "w", encoding="utf-8") as f:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(personer, f, ensure_ascii=False, indent=4)
         print("\n ✅ Data er gemt i 'personer.json'")
     except Exception as e:
         print(f"❌ Kunne ikke gemme data: {e}")
 
+
 def hent_fra_json():
+    """
+    Load person data from a JSON file.
+    
+    Returns:
+        list: List of person dictionaries, or empty list if file doesn't exist
+    """
     try:
-        with open("personer.json", "r", encoding="utf-8") as f:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
             personer = json.load(f)
         print("\n ✅ Data er hentet fra 'personer.json'")
         return personer
     except FileNotFoundError:
         print("❌ Filen 'personer.json' blev ikke fundet.")
-        return [] # Hvis filen ikke findes, returnerer vi en tom liste, så programmet kan fortsætte uden at crashe
+        return []  # Return empty list so program can continue without crashing
     except Exception as e:
         print(f"❌ Kunne ikke hente data: {e}")
-        return [] # Hvis der opstår en anden fejl, returnerer vi også en tom liste for at sikre, at programmet kan fortsætte
+        return []  # Return empty list for error resilience
+
+
+def clear_screen():
+    """
+    Clear the terminal screen in a cross-platform way.
+    Works on both Windows (cls) and Unix-based systems (clear).
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def vis_alle_personer(personer):
+    """
+    Display all registered persons.
+    
+    Args:
+        personer (list): List of person dictionaries to display
+    """
     if not personer:
         print("\n📭 Ingen personer registreret endnu.")
     else:
@@ -32,60 +70,26 @@ def vis_alle_personer(personer):
         for p in personer:
             print(f"- {p['navn']}: {p['alder']} år")
 
-def main():
-    personer = hent_fra_json() 
-    
-    while True:
-        # os.system('clear') flyttet herind for at holde terminalen ren
-        os.system('cls' if os.name == 'nt' else 'clear') # Dette er den magiske kommando, der rydder skærmen på både Windows og Unix-baserede systemer  
-        print("\n--- HOVEDMENU ---")
-        print("1. Se alle personer")
-        print("2. Registrer nye personer")
-        print("3. Søg efter en person")
-        print("4. Slet en person")
-        print("5. Afslut")
-        
-        valg = input("\nVælg (1-5): ").strip() # .strip() fjerner unødigt mellemrum
-        
-        if not valg: # Tjekker om inputtet er tomt
-            print("⚠️ Du skal indtaste et valg.")
-            continue
-
-        if valg == "1":
-            if not personer:
-                print("\n📭 Ingen personer registreret endnu.")
-            else:
-                vis_alle_personer(personer)
-        elif valg == "2":
-            register_personer(personer) # Send listen med ind
-            # Slet denne linje: personer = hent_fra_json()
-        elif valg == "3":
-            if not personer:
-                print("📭 Ingen data at søge i.")
-            else:
-                soeg_person(personer)
-        elif valg == "4":
-            if not personer:
-                print("📭 Ingen data at slette.")
-            else:
-                slet_person(personer)
-        elif valg == "5":
-            print("🚀 Tak for i dag! Programmet lukker...")
-            break
-        else:
-            print(f"❌ '{valg}' er ikke en mulighed. Vælg venligst et tal mellem 1 og 5.")
-        input("\nTryk på Enter for at fortsætte...") # Dette holder terminalen åben, så brugeren kan se resultatet, inden skærmen ryddes igen
-
-    #print("Velkommen til alderstjekket!")
-    #alder()
-    
-    #print("\nNu skal vi registrere oplysninger for nogle personer.")
-    #register_personer()
 
 def soeg_person(personer):
-    navn_soeg = input("\nHvem leder du efter? ").lower()
-    fundet = False
+    """
+    Search for a person by name (case-insensitive).
     
+    Args:
+        personer (list): List of person dictionaries to search in
+    """
+    if not personer:
+        print("📭 Ingen data at søge i.")
+        return
+    
+    navn_soeg = input("\nHvem leder du efter? ").strip().lower()
+    
+    # Validate input
+    if not navn_soeg:
+        print("⚠️ Du skal indtaste et navn.")
+        return
+    
+    fundet = False
     for p in personer:
         if p["navn"].lower() == navn_soeg:
             print(f"🔍 Fundet: {p['navn']} er {p['alder']} år gammel.")
@@ -95,21 +99,45 @@ def soeg_person(personer):
     if not fundet:
         print(f"❌ Kunne ikke finde '{navn_soeg}' i databasen.")
 
+
 def slet_person(personer):
-    navn_slet = input("\nHvem skal slettes? ").lower()
+    """
+    Delete a person by name (case-insensitive) and save changes.
+    
+    Args:
+        personer (list): List of person dictionaries to modify
+    """
+    if not personer:
+        print("📭 Ingen data at slette.")
+        return
+    
+    navn_slet = input("\nHvem skal slettes? ").strip().lower()
+    
+    # Validate input
+    if not navn_slet:
+        print("⚠️ Du skal indtaste et navn.")
+        return
+    
     oprindeligt_antal = len(personer)
     
-    # Vi laver en ny liste, der kun indeholder dem, der IKKE har det navn
+    # Create a new list containing only persons whose names don't match
     personer[:] = [p for p in personer if p["navn"].lower() != navn_slet]
     
     if len(personer) < oprindeligt_antal:
         print(f"🗑️ {navn_slet.capitalize()} er nu slettet.")
-        gem_til_json(personer) # Husk at gemme ændringen!
+        gem_til_json(personer)  # Remember to save the changes!
     else:
         print(f"❓ Kunne ikke finde nogen ved navn '{navn_slet}'.")
 
+
 def hilsen(navn):
-    navn_lower = navn.lower() # Dette konverterer navnet til små bogstaver, så det er nemmere at sammenligne
+    """
+    Display a personalized greeting based on the person's name.
+    
+    Args:
+        navn (str): The person's name
+    """
+    navn_lower = navn.lower()  # Convert to lowercase for consistent comparison
 
     if navn_lower == "john":
         print("🤖 System-besked: Hejsa makker! Bash-eksperten er stolt af din fremgang.")
@@ -122,49 +150,75 @@ def hilsen(navn):
     else:
         print(f"Hej {navn}, hyggeligt at du kigger forbi.")
 
+
 def alder():
-    forsoeg = 3
+    """
+    Verify and store the user's age with retry logic and countdown.
+    
+    Returns:
+        int: The validated age, or None if all attempts fail
+    """
+    forsoeg = MAX_ATTEMPTS
     alder = None
 
-    # Vi bliver ved med at spørge, så længe vi har forsøg tilbage og ingen alder har
+    # Keep asking while we have attempts remaining and no valid age
     while forsoeg > 0:
-        alder_input = input(f"Hvor gammel er du? (Forsøg tilbage: {forsoeg}): ")
+        alder_input = input(f"Hvor gammel er du? (Forsøg tilbage: {forsoeg}): ").strip()
         
         try:
             alder = int(alder_input)
-            break  # Succes! Hop ud af while-løkken
+            break  # Success! Exit the while loop
         except ValueError:
             forsoeg -= 1
             if forsoeg > 0:
                 print("FEJL: Du skal indtaste et gyldigt heltal.")
             else:
                 print("Du har brugt alle dine forsøg.")
-                return # Afslut programmet
+                return None
 
-    # Her kører vi med den meget enklere udgave af logikken.
-    status = "Voksen" if alder >= 18 else "barn"
+    # Determine adult/child status
+    status = "Voksen" if alder >= 18 else "Barn"
     print(f"Du er {alder} år gammel, hvilket vil sige at du er {status}.")
 
-    # Her er der lavet en lille nedttælling fra 3 til 1 uden en pause imellem hver udskrift
+    # Countdown from 3 to 1 with 1 second delay between each
     for i in range(3):
         print(f"Tæller ned: {3 - i}...")
-        # Her laver jeg en pause på 1 sekund mellem hver udskrift
-        sleep(1)  
+        sleep(1)
+    
+    return alder
+
 
 def register_personer(personer):
-    # FØR: def register_personer():
-    # EFTER: def register_personer(personer):
-    # SLET denne Linje: personer = hent_fra_json() # Vi starter med at hente eksisterende data, hvis der er nogen
-
+    """
+    Register new persons and add them to the existing list.
+    Handles retry logic for input validation.
+    
+    Args:
+        personer (list): Existing list of person dictionaries to append to
+    """
+    # Display existing data count
     if personer:
         print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
-    tryings = 3
-
-    # print("Indtast oplysninger for 3 personer:")
-    while tryings > 0:
     
+    tryings = MAX_ATTEMPTS
+
+    # Validate number of persons to register
+    while tryings > 0:
         try:
-            antal_personer = int(input("Hvor mange personer vil du registrere? "))
+            antal_personer_input = input("Hvor mange personer vil du registrere? ").strip()
+            
+            if not antal_personer_input:
+                print("⚠️ Du skal indtaste et tal.")
+                tryings -= 1
+                continue
+            
+            antal_personer = int(antal_personer_input)
+            
+            if antal_personer <= 0:
+                print("⚠️ Antal skal være større end 0.")
+                tryings -= 1
+                continue
+            
             break
         except ValueError:
             tryings -= 1
@@ -174,32 +228,102 @@ def register_personer(personer):
                 print("Du har brugt alle dine forsøg.")
                 return
 
+    # Register each person
     for i in range(antal_personer):
-        navn = input(f"\nNavn på person {i+1}: ")
+        navn = input(f"\nNavn på person {i+1}: ").strip()
+        
+        # Validate name input
+        if not navn:
+            print("⚠️ Navn kan ikke være tomt.")
+            i -= 1  # Retry this person
+            continue
+        
         hilsen(navn)
 
-        # Her genbruger vi din smarte fejlhåndtering til alderen
+        # Reuse smart age validation with retry logic
         while True:
             try:
-                alder = int(input(f"Hvor gammel er {navn}? "))
+                alder_input = input(f"Hvor gammel er {navn}? ").strip()
+                
+                if not alder_input:
+                    print("⚠️ Du skal indtaste et tal.")
+                    continue
+                
+                alder = int(alder_input)
+                
+                if alder < 0:
+                    print("⚠️ Alder kan ikke være negativ.")
+                    continue
+                
                 break
             except ValueError:
                 print("Indtast venligst et tal.")
         
-        # Vi tilføjer en 'dictionary' til vores liste
+        # Add person dictionary to the list
         personer.append({"navn": navn, "alder": alder})
 
-    # Nu finder vi den ældste (Python magi!)
+    # Find the oldest person (Python magic!)
     aeldste_person = max(personer, key=lambda x: x["alder"])
     
     print(f"\nDen ældste person er {aeldste_person['navn']} på {aeldste_person['alder']} år.")
 
-    # Vi kan også udskrive alle personerne for at se, at det virker
+    # Display all registered persons
     print("\nAlle registrerede personer:")
     for p in personer:
         print(f"- {p['navn']}: {p['alder']} år")
 
-    gem_til_json(personer) # Gemmer data i JSON-format
+    gem_til_json(personer)  # Save data in JSON format
+
+
+def display_menu():
+    """
+    Display the main menu options.
+    """
+    print("\n--- HOVEDMENU ---")
+    print("1. Se alle personer")
+    print("2. Registrer nye personer")
+    print("3. Søg efter en person")
+    print("4. Slet en person")
+    print("5. Afslut")
+
+
+def main():
+    """
+    Main program loop handling user menu selection and program flow.
+    """
+    personer = hent_fra_json()
+    
+    while True:
+        # Clear screen for clean display
+        clear_screen()
+        
+        display_menu()
+        
+        valg = input("\nVælg (1-5): ").strip()  # .strip() removes unnecessary whitespace
+        
+        # Validate input
+        if not valg:
+            print("⚠️ Du skal indtaste et valg.")
+            input("\nTryk på Enter for at fortsætte...")
+            continue
+
+        # Handle menu selection
+        if valg == "1":
+            vis_alle_personer(personer)
+        elif valg == "2":
+            register_personer(personer)
+        elif valg == "3":
+            soeg_person(personer)
+        elif valg == "4":
+            slet_person(personer)
+        elif valg == "5":
+            print("🚀 Tak for i dag! Programmet lukker...")
+            break
+        else:
+            print(f"❌ '{valg}' er ikke en mulighed. Vælg venligst et tal mellem 1 og 5.")
+        
+        input("\nTryk på Enter for at fortsætte...")  # Hold the terminal open so user can see the result
+
 
 if __name__ == "__main__":
     main()
