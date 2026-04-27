@@ -26,11 +26,64 @@ def hent_fra_json():
         return [] # Hvis der opstår en anden fejl, returnerer vi også en tom liste for at sikre, at programmet kan fortsætte
     
 def main():
-    print("Velkommen til alderstjekket!")
-    alder()
+    personer = hent_fra_json() # Start med at hente data
     
-    print("\nNu skal vi registrere oplysninger for nogle personer.")
-    register_personer()
+    while True:
+        print("\n--- HOVEDMENU ---")
+        print("1. Se alle personer")
+        print("2. Registrer nye personer")
+        print("3. Søg efter en person")
+        print("4. Slet en person")
+        print("5. Afslut")
+        
+        valg = input("\nVælg (1-5): ")
+        
+        if valg == "1":
+            for p in personer: print(f"- {p['navn']}: {p['alder']} år")
+        elif valg == "2":
+            register_personer() # Din eksisterende funktion
+            personer = hent_fra_json() # Opdater listen efter registrering
+        elif valg == "3":
+            soeg_person(personer)
+        elif valg == "4":
+            slet_person(personer)
+        elif valg == "5":
+            print("Tak for i dag!")
+            break
+        else:
+            print("Ugyldigt valg, prøv igen.")
+
+    #print("Velkommen til alderstjekket!")
+    #alder()
+    
+    #print("\nNu skal vi registrere oplysninger for nogle personer.")
+    #register_personer()
+
+def soeg_person(personer):
+    navn_soeg = input("\nHvem leder du efter? ").lower()
+    fundet = False
+    
+    for p in personer:
+        if p["navn"].lower() == navn_soeg:
+            print(f"🔍 Fundet: {p['navn']} er {p['alder']} år gammel.")
+            fundet = True
+            break
+    
+    if not fundet:
+        print(f"❌ Kunne ikke finde '{navn_soeg}' i databasen.")
+
+def slet_person(personer):
+    navn_slet = input("\nHvem skal slettes? ").lower()
+    oprindeligt_antal = len(personer)
+    
+    # Vi laver en ny liste, der kun indeholder dem, der IKKE har det navn
+    personer[:] = [p for p in personer if p["navn"].lower() != navn_slet]
+    
+    if len(personer) < oprindeligt_antal:
+        print(f"🗑️ {navn_slet.capitalize()} er nu slettet.")
+        gem_til_json(personer) # Husk at gemme ændringen!
+    else:
+        print(f"❓ Kunne ikke finde nogen ved navn '{navn_slet}'.")
 
 def hilsen(navn):
     navn_lower = navn.lower() # Dette konverterer navnet til små bogstaver, så det er nemmere at sammenligne
@@ -77,9 +130,8 @@ def alder():
 
 def register_personer():
     # personer = []  # Vores liste til at gemme data
-    # Vi prøver at hente data fra JSON-filen først, så vi kan fortsætte med eksisterende data, hvis filen findes
-    personer = hent_fra_json()
-
+    personer = hent_fra_json() # Vi starter med at hente eksisterende data, hvis der er nogen
+    
     if personer:
         print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
     tryings = 3
