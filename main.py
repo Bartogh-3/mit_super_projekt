@@ -8,6 +8,16 @@ def main():
     print("\nNu skal vi registrere oplysninger for 3 personer.")
     register_personer()
 
+def hilsen(navn):
+    navn_lower = navn.lower() # Dette konverterer navnet til små bogstaver, så det er nemmere at sammenligne
+
+    if navn_lower == "john":
+        print("🤖 System-besked: Hejsa makker! Bash-eksperten er stolt af din fremgang.")
+    elif navn_lower == "bart" or navn_lower == "kim":
+        print(f"👋 Velkommen tilbage {navn}, skaberen af dette program!")
+    else:
+        print(f"Hej {navn}, hyggeligt at du kigger forbi.")
+
 def alder():
     forsoeg = 3
     alder = None
@@ -44,6 +54,7 @@ def register_personer():
     
     for i in range(3):
         navn = input(f"\nNavn på person {i+1}: ")
+        hilsen(navn)
         
         # Her genbruger vi din smarte fejlhåndtering til alderen
         while True:
