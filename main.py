@@ -53,9 +53,21 @@ def alder():
 
 def register_personer():
     personer = []  # Vores liste til at gemme data
-    
+    tryings = 3
+
     # print("Indtast oplysninger for 3 personer:")
     antal_personer = int(input("Hvor mange personer vil du registrere? "))
+    while tryings > 0:
+        try:
+            antal_personer = int(antal_personer)
+            break
+        except ValueError:
+            tryings -= 1
+            if tryings > 0:
+                print("Indtast venligst kun tal.")
+            else:
+                print("Du har brugt alle dine forsøg.")
+                return
 
     for i in range(antal_personer):
         navn = input(f"\nNavn på person {i+1}: ")
