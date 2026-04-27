@@ -5,7 +5,7 @@ def main():
     print("Velkommen til alderstjekket!")
     alder()
     
-    print("\nNu skal vi registrere oplysninger for 3 personer.")
+    print("\nNu skal vi registrere oplysninger for nogle personer.")
     register_personer()
 
 def hilsen(navn):
@@ -15,6 +15,10 @@ def hilsen(navn):
         print("🤖 System-besked: Hejsa makker! Bash-eksperten er stolt af din fremgang.")
     elif navn_lower == "bart" or navn_lower == "kim":
         print(f"👋 Velkommen tilbage {navn}, skaberen af dette program!")
+    elif navn_lower == "kirsten":
+        print(f"👋 Velkommen {navn}, du er da konen til skaberen af dette program!")
+    elif navn_lower == "silke":
+        print(f"👋 Velkommen {navn}, du er da skaberen af dette program's prinsesse!")
     else:
         print(f"Hej {navn}, hyggeligt at du kigger forbi.")
 
@@ -50,12 +54,13 @@ def alder():
 def register_personer():
     personer = []  # Vores liste til at gemme data
     
-    print("Indtast oplysninger for 3 personer:")
-    
-    for i in range(3):
+    # print("Indtast oplysninger for 3 personer:")
+    antal_personer = int(input("Hvor mange personer vil du registrere? "))
+
+    for i in range(antal_personer):
         navn = input(f"\nNavn på person {i+1}: ")
         hilsen(navn)
-        
+
         # Her genbruger vi din smarte fejlhåndtering til alderen
         while True:
             try:
