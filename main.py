@@ -52,11 +52,13 @@ def main():
             continue
 
         if valg == "1":
-            vis_alle_personer(personer)
-        
+            if not personer:
+                print("\n📭 Ingen personer registreret endnu.")
+            else:
+                vis_alle_personer(personer)
         elif valg == "2":
-            register_personer()
-            personer = hent_fra_json()
+            register_personer(personer) # Send listen med ind
+            # Slet denne linje: personer = hent_fra_json()
         elif valg == "3":
             if not personer:
                 print("📭 Ingen data at søge i.")
@@ -72,6 +74,7 @@ def main():
             break
         else:
             print(f"❌ '{valg}' er ikke en mulighed. Vælg venligst et tal mellem 1 og 5.")
+        input("\nTryk på Enter for at fortsætte...") # Dette holder terminalen åben, så brugeren kan se resultatet, inden skærmen ryddes igen
 
     #print("Velkommen til alderstjekket!")
     #alder()
@@ -148,9 +151,10 @@ def alder():
         # Her laver jeg en pause på 1 sekund mellem hver udskrift
         sleep(1)  
 
-def register_personer():
-    # personer = []  # Vores liste til at gemme data
-    personer = hent_fra_json() # Vi starter med at hente eksisterende data, hvis der er nogen
+def register_personer(personer):
+    # FØR: def register_personer():
+    # EFTER: def register_personer(personer):
+    # SLET denne Linje: personer = hent_fra_json() # Vi starter med at hente eksisterende data, hvis der er nogen
 
     if personer:
         print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
