@@ -74,7 +74,12 @@ def alder():
         sleep(1)  
 
 def register_personer():
-    personer = []  # Vores liste til at gemme data
+    # personer = []  # Vores liste til at gemme data
+    # Vi prøver at hente data fra JSON-filen først, så vi kan fortsætte med eksisterende data, hvis filen findes
+    personer = hent_fra_jason()
+
+    if personer:
+        print(f"\n📂 Eksisterende data fundet og indlæst.\nVelkommen tilbage! Jeg kender allerede {len(personer)} personer.")
     tryings = 3
 
     # print("Indtast oplysninger for 3 personer:")
